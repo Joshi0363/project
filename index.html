@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Heavenly Floral Bookstore</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+body{
+  margin:0;
+  font-family:'Playfair Display',serif;
+  background:linear-gradient(to bottom,#fff0f5,#e6f2ff);
+  overflow-x:hidden;
+}
+header{
+  background:linear-gradient(to right,#fbc2eb,#a6c1ee);
+  padding:20px;
+  text-align:center;
+  font-size:30px;
+  color:#4b2e2e;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+.controls{
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  margin:20px;
+}
+input,select{
+  padding:10px;
+  border-radius:20px;
+  border:none;
+}
+.cart-btn{
+  position:fixed;
+  top:20px;
+  right:20px;
+  background:#ffb7dd;
+  padding:10px 15px;
+  border-radius:50%;
+  cursor:pointer;
+}
+.store{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:25px;
+  padding:30px;
+}
+.book{
+  background:rgba(255,255,255,0.85);
+  border-radius:25px;
+  padding:15px;
+  box-shadow:0 10px 20px rgba(0,0,0,0.1);
+  transition:0.3s;
+}
+.book:hover{
+  transform:translateY(-10px) scale(1.03);
+}
+.book img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  border-radius:20px;
+}
+.price{font-weight:bold;color:#6a0572;}
+button{
+  background:linear-gradient(to right,#fcb69f,#ffecd2);
+  border:none;
+  padding:8px 12px;
+  border-radius:20px;
+  cursor:pointer;
+}
+.cart-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+.cart-box{
+  background:white;
+  width:350px;
+  padding:20px;
+  border-radius:20px;
+}
+.flower{
+  position:fixed;
+  top:-50px;
+  font-size:24px;
+  animation:fall linear infinite;
+}
+@keyframes fall{
+  to{transform:translateY(110vh) rotate(360deg);}
+}
+</style>
+</head>
+
+<body>
+
+<header>🌸 Heavenly Floral Book Store 🌸</header>
+
+<div class="cart-btn" onclick="openCart()">🛒</div>
+
+<div class="controls">
+  <input type="text" id="search" placeholder="Search book">
+  <select id="genre">
+    <option>All</option>
+    <option>Fantasy</option>
+    <option>Romance</option>
+    <option>Self-help</option>
+    <option>Science</option>
+  </select>
+</div>
+
+<div class="store" id="store"></div>
+
+<div class="cart-modal" id="cartModal">
+  <div class="cart-box">
+    <h3>🛒 Cart</h3>
+    <ul id="cartItems"></ul>
+    <h4>Total: ₹<span id="total">0</span></h4>
+    <button onclick="closeCart()">Close</button>
+  </div>
+</div>
+
+<script>
+const books=[
+{name:"Fairy Kingdom",genre:"Fantasy",price:499,img:"https://images.unsplash.com/photo-1524985069026-dd778a71c7b4"},
+{name:"Moonlight Love",genre:"Romance",price:399,img:"https://images.unsplash.com/photo-1528207776546-365bb710ee93"},
+{name:"Atomic Habits",genre:"Self-help",price:599,img:"https://images.unsplash.com/photo-1589820296156-2454bb8a6ad1"},
+{name:"Cosmic Wonders",genre:"Science",price:699,img:"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"},
+{name:"Dream Tales",genre:"Fantasy",price:450,img:"https://images.unsplash.com/photo-1495446815901-a7297e633e8d"},
+{name:"Heart Strings",genre:"Romance",price:350,img:"https://images.unsplash.com/photo-1512820790803-83ca734da794"}
+];
+
+const store=document.getElementById("store");
+const search=document.getElementById("search");
+const genre=document.getElementById("genre");
+let cart=[];
+
+function displayBooks(){
+store.innerHTML="";
+books.filter(b=>
+(genre.value=="All"||b.genre==genre.value)&&
+b.name.toLowerCase().includes(search.value.toLowerCase())
+).forEach(book=>{
+const div=document.createElement("div");
+div.className="book";
+div.innerHTML=`
+<img src="${book.img}">
+<h3>${book.name}</h3>
+<p>${book.genre}</p>
+<p class="price">₹${book.price}</p>
+<button onclick="addToCart('${book.name}',${book.price})">Add to Cart</button>
+`;
+store.appendChild(div);
+});
+}
+
+function addToCart(name,price){
+cart.push({name,price});
+updateCart();
+}
+
+function openCart(){
+document.getElementById("cartModal").style.display="flex";
+}
+
+function closeCart(){
+document.getElementById("cartModal").style.display="none";
+}
+
+function updateCart(){
+const list=document.getElementById("cartItems");
+list.innerHTML="";
+let total=0;
+cart.forEach(item=>{
+total+=item.price;
+const li=document.createElement("li");
+li.textContent=`${item.name} - ₹${item.price}`;
+list.appendChild(li);
+});
+document.getElementById("total").textContent=total;
+}
+
+search.addEventListener("input",displayBooks);
+genre.addEventListener("change",displayBooks);
+displayBooks();
+
+// falling flowers
+setInterval(()=>{
+const flower=document.createElement("div");
+flower.className="flower";
+flower.style.left=Math.random()*100+"vw";
+flower.style.animationDuration=(3+Math.random()*5)+"s";
+flower.textContent="🌸";
+document.body.appendChild(flower);
+setTimeout(()=>flower.remove(),8000);
+},400);
+</script>
+
+</body>
+</html>
